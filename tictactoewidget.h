@@ -17,6 +17,10 @@ enum Player {
     Player1, Player2
 };
 
+enum Winner {
+    player1, player2, Draw, NoWinnerYet
+};
+
 class TicTacToeWidget : public QWidget
 {
     Q_OBJECT
@@ -33,6 +37,8 @@ private slots:
 
 private:
     void createBoard();
+
+    Winner determineWinner(const QString&, int);
 
 private:
     QList<QPushButton*> board;
