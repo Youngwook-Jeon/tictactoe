@@ -39,24 +39,28 @@ void TicTacToeWidget::handleClicksOnBoard(int buttonIndex)
     QString symbol;
 
     if (player == Player::Player1) {
-        symbol = "X";
+        symbol = MetaData::PLAYER1_SYMBOL;
         button->setText(symbol);
         button->setStyleSheet("QPushButton{color: blue; background: lightyellow;}");
         button->setDisabled(true);
-        setCurrentPlayer(Player::Player2);
     } else if (player == Player::Player2) {
-        symbol = "O";
+        symbol = MetaData::PLAYER2_SYMBOL;
         button->setText(symbol);
         button->setStyleSheet("QPushButton{color: red; background: lightgreen;}");
         button->setDisabled(true);
-        setCurrentPlayer(Player::Player1);
     }
 
     Winner winner = determineWinner(symbol, buttonIndex);
-    if (winner == Winner::NoWinnerYet) {
 
+    if (winner == Winner::NoWinnerYet) {
+        if (player == Player::Player1) {
+            setCurrentPlayer(Player::Player2);
+        } else if (player == Player::Player2) {
+            setCurrentPlayer(Player::Player1);
+        }
     }
     else {
+        this->setDisabled(true);
         if (winner == Winner::player1) qDebug() << "Player 1 wins";
     }
 }
@@ -114,13 +118,15 @@ Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
     }
 
     if (++counter == MetaData::COLUMNS) {
-        if (symbol == "X") {
+        if (symbol == MetaData::PLAYER1_SYMBOL) {
             return Winner::player1;
         }
-        else if (symbol == "O") {
+        else if (symbol == MetaData::PLAYER2_SYMBOL) {
             return Winner::player2;
         }
     }
+
+    // vertical checking
 
     return Winner::NoWinnerYet;
 }

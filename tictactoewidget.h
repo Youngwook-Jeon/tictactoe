@@ -11,6 +11,8 @@ struct MetaData {
     static constexpr int ROWS = 3;
     static constexpr int COLUMNS = 3;
     static constexpr const char* SPACE_CHAR = " ";
+    static constexpr const char* PLAYER1_SYMBOL = "X";
+    static constexpr const char* PLAYER2_SYMBOL = "O";
 };
 
 enum Player {
