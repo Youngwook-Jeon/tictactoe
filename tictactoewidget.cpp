@@ -127,6 +127,36 @@ Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
     }
 
     // vertical checking
+    counter = 0;
+    isValidSecondCheck = true;
+    int newRow = rowNum;
+    while (--newRow >= 0) {
+        int newPositionIndex = newRow * MetaData::COLUMNS + colNum;
+        QPushButton* button = board.at(newPositionIndex);
+        if (button->text() != symbol) {
+            isValidSecondCheck = false;
+            break;
+        } else {
+            ++counter;
+        }
+    }
+
+    newRow = rowNum;
+    while (++newRow < MetaData::ROWS) {
+        int newPositionIndex = newRow * MetaData::COLUMNS + colNum;
+        QPushButton* button = board.at(newPositionIndex);
+        if (button->text() != symbol) {
+            isValidSecondCheck = false;
+            break;
+        } else {
+            ++counter;
+        }
+    }
+
+    if (++counter == MetaData::ROWS) {
+        if (symbol == MetaData::PLAYER1_SYMBOL) return Winner::player1;
+        else if (symbol == MetaData::PLAYER2_SYMBOL) return Winner::player2;
+    }
 
     return Winner::NoWinnerYet;
 }
