@@ -12,7 +12,7 @@ TicTacToeWidget::~TicTacToeWidget() {}
 
 void TicTacToeWidget::resetBoard()
 {
-    for (int i = 0; i < MetaData::ROWS * MetaData::COLUMNS; i++) {
+    for (int i = 0; i < MetaData::ROWS_COLUMNS * MetaData::ROWS_COLUMNS; i++) {
         board.at(i)->setText(MetaData::SPACE_CHAR);
     }
 }
@@ -62,6 +62,7 @@ void TicTacToeWidget::handleClicksOnBoard(int buttonIndex)
     else {
         this->setDisabled(true);
         if (winner == Winner::player1) qDebug() << "Player 1 wins";
+        else if (winner == Winner::player2) qDebug() << "Player 2 wins";
     }
 }
 
@@ -69,8 +70,8 @@ void TicTacToeWidget::createBoard()
 {
     QGridLayout* grid = new QGridLayout(this);
     QSignalMapper* mapper = new QSignalMapper();
-    for (int row = 0; row < MetaData::ROWS; row++) {
-        for (int column = 0; column < MetaData::COLUMNS; column++) {
+    for (int row = 0; row < MetaData::ROWS_COLUMNS; row++) {
+        for (int column = 0; column < MetaData::ROWS_COLUMNS; column++) {
             QPushButton* button = new QPushButton(this);
             button->setText(MetaData::SPACE_CHAR);
             button->setMinimumHeight(50);
@@ -86,15 +87,15 @@ void TicTacToeWidget::createBoard()
 
 Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
 {
-    int rowNum = position / MetaData::COLUMNS;
-    int colNum = position % MetaData::COLUMNS;
+    int rowNum = position / MetaData::ROWS_COLUMNS;
+    int colNum = position % MetaData::ROWS_COLUMNS;
     int counter = 0;
 
     // horizontal checking
     int newCol = colNum;
     bool isValidSecondCheck = true;
-    while (++newCol < MetaData::COLUMNS) {
-        int newPos = rowNum * MetaData::COLUMNS + newCol;
+    while (++newCol < MetaData::ROWS_COLUMNS) {
+        int newPos = rowNum * MetaData::ROWS_COLUMNS + newCol;
         QPushButton* button = board.at(newPos);
         if (button->text() != symbol) {
             isValidSecondCheck = false;
@@ -107,7 +108,7 @@ Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
 
     newCol = colNum;
     while (isValidSecondCheck && --newCol >= 0) {
-        int newPos = rowNum * MetaData::COLUMNS + newCol;
+        int newPos = rowNum * MetaData::ROWS_COLUMNS + newCol;
         QPushButton* button = board.at(newPos);
         if (button->text() != symbol) {
             break;
@@ -117,7 +118,7 @@ Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
         }
     }
 
-    if (++counter == MetaData::COLUMNS) {
+    if (++counter == MetaData::ROWS_COLUMNS) {
         if (symbol == MetaData::PLAYER1_SYMBOL) {
             return Winner::player1;
         }
@@ -131,7 +132,7 @@ Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
     isValidSecondCheck = true;
     int newRow = rowNum;
     while (--newRow >= 0) {
-        int newPositionIndex = newRow * MetaData::COLUMNS + colNum;
+        int newPositionIndex = newRow * MetaData::ROWS_COLUMNS + colNum;
         QPushButton* button = board.at(newPositionIndex);
         if (button->text() != symbol) {
             isValidSecondCheck = false;
@@ -142,9 +143,29 @@ Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
     }
 
     newRow = rowNum;
-    while (++newRow < MetaData::ROWS) {
-        int newPositionIndex = newRow * MetaData::COLUMNS + colNum;
+    while (isValidSecondCheck && ++newRow < MetaData::ROWS_COLUMNS) {
+        int newPositionIndex = newRow * MetaData::ROWS_COLUMNS + colNum;
         QPushButton* button = board.at(newPositionIndex);
+        if (button->text() != symbol) {
+            break;
+        } else {
+            ++counter;
+        }
+    }
+
+    if (++counter == MetaData::ROWS_COLUMNS) {
+        if (symbol == MetaData::PLAYER1_SYMBOL) return Winner::player1;
+        else if (symbol == MetaData::PLAYER2_SYMBOL) return Winner::player2;
+    }
+
+    // backslash diagonal checking
+    counter = 0;
+    isValidSecondCheck = true;
+    newRow = rowNum;
+    newCol = colNum;
+    while (--newRow >= 0 && --newCol >= 0) {
+        int newPositionIndex = newRow * MetaData::ROWS_COLUMNS + newCol;
+        QPushButton *button = board.at(newPositionIndex);
         if (button->text() != symbol) {
             isValidSecondCheck = false;
             break;
@@ -153,7 +174,19 @@ Winner TicTacToeWidget::determineWinner(const QString& symbol, int position)
         }
     }
 
-    if (++counter == MetaData::ROWS) {
+    newRow = rowNum;
+    newCol = colNum;
+    while (isValidSecondCheck && ++newRow < MetaData::ROWS_COLUMNS && ++newCol < MetaData::ROWS_COLUMNS) {
+        int newPositionIndex = newRow * MetaData::ROWS_COLUMNS + newCol;
+        QPushButton *button = board.at(newPositionIndex);
+        if (button->text() != symbol) {
+            break;
+        } else {
+            ++counter;
+        }
+    }
+
+    if (++counter == MetaData::ROWS_COLUMNS) {
         if (symbol == MetaData::PLAYER1_SYMBOL) return Winner::player1;
         else if (symbol == MetaData::PLAYER2_SYMBOL) return Winner::player2;
     }
